@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>アクセス制御</title>
+</head>
+<body>
+  <script>
+    const accessKey = "access";
+    
+    document.write('<p>パスワードを入力してください</p>');
+    document.write('<input type="password" id="keyInput" placeholder="パスワードを入力">');
+    
+    document.getElementById("keyInput").addEventListener("keydown", function(event) {
+      if (event.key === "Enter") {
+        const userInput = event.target.value;
+        
+        if (userInput === accessKey) {
+          window.location.href = "calendar.html";
+        } else {
+          alert("パスワードが正しくありません");
+        }
+        
+        event.preventDefault();
+      }
+    });
+  </script>
+</body>
+</html>
