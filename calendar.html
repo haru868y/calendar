@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        .calendar {
+            border: 1px solid #ccc;
+            width: 300px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .day {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: center;
+        }
+
+        .current-month {
+            background-color: #f2f2f2;
+        }
+
+        .selected-day {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        .reserved-day {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+    </style>
+    <title>カレンダー</title>
+</head>
+<body>
+    <h1>カレンダー</h1>
+    <div class="calendar">
+        <div class="header">
+            <button id="prevBtn">前月</button>
+            <h2 id="monthYear"></h2>
+            <button id="nextBtn">次月</button>
+        </div>
+        <div class="days"></div>
+    </div>
+    <script>
+        const monthYearHeader = document.getElementById('monthYear');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const daysContainer = document.querySelector('.days');
+
+        let currentDate = new Date();
+        let currentMonth = currentDate.getMonth();
+        let currentYear = currentDate.getFullYear();
+        let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        function updateCalendar() {
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+
+            monthYearHeader.textContent = `${currentYear}年 ${currentMonth + 1}月`;
+
+            daysContainer.innerHTML = '';
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement('div');
+                emptyDay.className = 'day';
+                daysContainer.appendChild(emptyDay);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.textContent = i;
+
+                if (currentMonth === currentDate.getMonth() && currentYear === currentDate.getFullYear() && i === currentDate.getDate()) {
+                    dayElement.classList.add('current-month');
+                }
+
+                dayElement.addEventListener('click', () => {
+                    const selectedDay = document.querySelector('.selected-day');
+                    if (selectedDay) {
+                        selectedDay.classList.remove('selected-day');
+                    }
+                    dayElement.classList.add('selected-day');
+                    saveSelectedDate(currentYear, currentMonth, i); // セッションストレージに選択した日付を保存
+                    redirectToURL(i);
+                });
+                daysContainer.appendChild(dayElement);
+            }
+        }
+
+        function redirectToURL(day) {
+            const selectedDate = new Date(currentYear, currentMonth, day);
+            //
+            const formattedDate = selectedDate.toISOString().split('T')[0];
+            const url = `form.html`;
+            //
+            window.location.href = url;
+        }
+        function saveSelectedDate(year, month, day) {
+            const selectedDate = { year, month, day };
+            localStorage.setItem('selectedDate', JSON.stringify(selectedDate));
+        }   
+
+        prevBtn.addEventListener('click', () => {
+            currentMonth -= 1;
+            if (currentMonth < 0) {
+                currentMonth = 11;
+                currentYear -= 1;
+            }
+            daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            updateCalendar();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentMonth += 1;
+            if (currentMonth > 11) {
+                currentMonth = 0;
+                currentYear += 1;
+            }
+            daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            updateCalendar();
+        });
+
+        updateCalendar();
+    </script>
+</body>
+</html>
