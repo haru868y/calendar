@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>予約フォーム</title>
+<style>
+  table {
+    border-collapse: collapse;
+    width: 300px;
+  }
+  th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<h1>予約フォーム</h1>
+
+<table>
+  <tr>
+    <th></th>
+    <th>午前</th>
+    <th>午後</th>
+  </tr>
+  <tr>
+    <td>A</td>
+    <td id="a-am" onclick="toggleReservation(this, 'am', 'A')">○</td>
+    <td id="a-pm" onclick="toggleReservation(this, 'pm', 'A')">○</td>
+  </tr>
+  <tr>
+    <td>B</td>
+    <td id="b-am" onclick="toggleReservation(this, 'am', 'B')">○</td>
+    <td id="b-pm" onclick="toggleReservation(this, 'pm', 'B')">○</td>
+  </tr>
+</table>
+<button id="back-button">カレンダーに戻る</button>
+
+<div id="reservation-modal" style="display: none;">
+  <h2>予約する</h2>
+  <form id="reservation-form">
+    <label for="name">名前:</label>
+    <input type="text" id="name" required>
+    <button type="submit">予約する</button>
+  </form>
+</div>
+
+<script>
+  let reservations = {
+    'A': { am: true, pm: true },
+    'B': { am: true, pm: true }
+  };
+  let selectedDate = JSON.parse(localStorage.getItem('selectedDate'));
+  localStorage.removeItem('selectedDate'); // 選択した日付は使用後に削除
+
+  function toggleReservation(cell, slot, person) {
+    const modal = document.getElementById('reservation-modal');
+    const form = document.getElementById('reservation-form');
+    const nameInput = document.getElementById('name');
+
+    if (reservations[person][slot]) {
+      modal.style.display = 'block';
+
+      form.onsubmit = function(event) {
+        event.preventDefault();
+        const name = nameInput.value.trim();
+        if (name !== '') {
+          reservations[person][slot] = false;
+          cell.textContent = '×';
+          modal.style.display = 'none';
+        }
+      };
+    }
+  }
+  const backButton = document.getElementById('back-button');
+  backButton.addEventListener('click', function() {
+        window.location.href = 'calendar.html';
+      });
+</script>
+</body>
+</html>
